@@ -32,13 +32,13 @@ export default function TopNavBar() {
         <div className="flex items-center gap-4">
           <button
             type="button"
-            className="text-sm font-medium text-zinc-500 transition-colors duration-200 ease-in-out hover:text-zinc-900"
+            className="cursor-pointer text-sm font-medium text-zinc-500 transition-colors duration-200 ease-in-out hover:text-zinc-900"
           >
             Sign In
           </button>
           <button
             type="button"
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-50 transition-all duration-200 hover:bg-zinc-800"
+            className="cursor-pointer rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-50 transition-all duration-200 hover:bg-zinc-800"
           >
             Get Started
           </button>
