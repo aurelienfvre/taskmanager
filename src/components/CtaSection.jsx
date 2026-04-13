@@ -1,29 +1,28 @@
-// Section d'appel à l'action en fin de page
+// Section d'appel à l'action finale
 export default function CtaSection() {
   return (
-    <section className="bg-slate-50 py-32 text-center">
-      <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[2.5rem] bg-blue-900 px-8 py-20 text-white">
-        <div
-          className="absolute right-0 top-0 h-64 w-64 -translate-y-1/2 translate-x-1/2 rounded-full bg-blue-700 blur-[80px]"
-          aria-hidden="true"
-        />
-
-        <h2 className="relative z-10 mb-8 text-4xl font-black md:text-5xl">
-          Prêt à transformer votre workflow ?
+    <section className="bg-zinc-50 py-32">
+      <div className="mx-auto max-w-3xl px-8 text-center">
+        <h2 className="mb-6 text-4xl font-bold tracking-tight text-zinc-900">
+          Prêt à transformer votre flux de travail ?
         </h2>
+        <p className="mb-12 text-lg text-zinc-500">
+          Rejoignez plus de 50 000 professionnels qui utilisent TaskManager pour
+          rester concentrés.
+        </p>
 
-        <div className="relative z-10 flex flex-col justify-center gap-4 sm:flex-row">
+        <div className="flex flex-col justify-center gap-4 md:flex-row">
           <button
             type="button"
-            className="rounded-xl bg-white px-10 py-4 font-bold text-blue-900 transition-all hover:bg-slate-100"
+            className="rounded-lg bg-zinc-900 px-8 py-4 font-medium text-zinc-50 transition-all hover:bg-zinc-800"
           >
-            Commencer maintenant
+            Commencer gratuitement
           </button>
           <button
             type="button"
-            className="rounded-xl border border-white/20 bg-blue-700 px-10 py-4 font-bold text-white transition-all hover:bg-blue-700/80"
+            className="rounded-lg border border-zinc-200 bg-white px-8 py-4 font-medium text-zinc-900 transition-all hover:bg-zinc-50"
           >
-            Voir la démo
+            Contacter l&apos;équipe
           </button>
         </div>
       </div>

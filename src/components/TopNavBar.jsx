@@ -1,28 +1,27 @@
-// Barre de navigation en haut de la page
+// Barre de navigation fixée en haut de la page
 export default function TopNavBar() {
   const liens = [
-    { href: "#", label: "Projects" },
-    { href: "#", label: "Workflow" },
-    { href: "#", label: "Focus" },
+    { href: "#", label: "Features" },
     { href: "#", label: "Pricing" },
+    { href: "#", label: "About" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-slate-50">
+    <header className="fixed top-0 z-50 w-full bg-white/80 backdrop-blur-md">
       <nav
         aria-label="Navigation principale"
-        className="mx-auto flex max-w-7xl items-center justify-between px-8 py-6"
+        className="mx-auto flex max-w-7xl items-center justify-between px-8 py-4 tracking-tight"
       >
-        <div className="text-2xl font-black tracking-tighter text-blue-900">
-          QuietArchitect
+        <div className="text-xl font-bold tracking-tighter text-zinc-900">
+          TaskManager
         </div>
 
-        <ul className="hidden items-center gap-8 text-lg font-medium md:flex">
+        <ul className="hidden items-center gap-8 md:flex">
           {liens.map((lien) => (
             <li key={lien.label}>
               <a
                 href={lien.href}
-                className="text-slate-700 transition-colors duration-200 hover:text-blue-700"
+                className="text-zinc-500 transition-colors duration-200 ease-in-out hover:text-zinc-900"
               >
                 {lien.label}
               </a>
@@ -30,12 +29,20 @@ export default function TopNavBar() {
           ))}
         </ul>
 
-        <button
-          type="button"
-          className="rounded-xl bg-blue-900 px-6 py-2.5 font-medium text-white transition-all hover:opacity-90 active:scale-95"
-        >
-          Get Started
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            className="text-sm font-medium text-zinc-500 transition-colors duration-200 ease-in-out hover:text-zinc-900"
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-50 transition-all duration-200 hover:bg-zinc-800"
+          >
+            Get Started
+          </button>
+        </div>
       </nav>
     </header>
   );

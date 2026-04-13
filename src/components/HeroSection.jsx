@@ -1,41 +1,31 @@
-import DashboardPreview from "./DashboardPreview";
-
-// Section hero : titre principal, sous-titre, CTA et aperçu du dashboard
+// Section hero : badge version, titre, sous-titre et CTA
 export default function HeroSection() {
   return (
-    <section className="relative flex min-h-[819px] flex-col items-center justify-center overflow-hidden px-8 pb-32 pt-20 text-center">
-      {/* Halos décoratifs en arrière-plan */}
-      <div className="absolute inset-0 -z-10 opacity-30" aria-hidden="true">
-        <div className="absolute left-[-10%] top-[-10%] h-[50%] w-[50%] rounded-full bg-blue-200 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] h-[40%] w-[40%] rounded-full bg-blue-100 blur-[100px]" />
+    <section className="mx-auto flex max-w-7xl flex-col items-center px-8 py-24 text-center md:py-48">
+      <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-500">
+        <span className="h-2 w-2 rounded-full bg-zinc-400" aria-hidden="true" />
+        v2.0 is now live
       </div>
 
-      <h1 className="mb-6 max-w-5xl text-[clamp(3.5rem,10vw,6rem)] font-black leading-[0.9] tracking-tight text-blue-900">
+      <h1 className="mb-6 max-w-4xl text-6xl font-bold tracking-tighter text-zinc-900 md:text-8xl">
         TaskManager
       </h1>
-      <p className="mb-12 max-w-2xl text-xl font-medium tracking-wide text-slate-700 md:text-2xl">
-        Gérez vos tâches efficacement
+      <p className="mb-12 max-w-2xl text-xl font-light leading-relaxed text-zinc-500 md:text-2xl">
+        Gérez vos tâches efficacement. Une approche minimaliste pour une
+        productivité maximale, sans le superflu.
       </p>
 
       <div className="flex flex-col items-center gap-6">
         <button
           type="button"
-          className="rounded-xl bg-gradient-to-br from-blue-900 to-blue-700 px-12 py-5 text-xl font-bold text-white shadow-xl shadow-blue-900/10 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-900/20 active:scale-95"
+          className="rounded-lg bg-zinc-900 px-10 py-4 text-lg font-medium text-zinc-50 transition-all duration-200 hover:bg-zinc-800 active:scale-95"
         >
           Commencer
         </button>
-
-        <div className="flex items-center gap-2 font-medium text-slate-500">
-          <span className="material-symbols-outlined text-lg" aria-hidden="true">
-            verified_user
-          </span>
-          <span className="text-sm uppercase tracking-widest">
-            Focus-first architecture
-          </span>
-        </div>
+        <p className="text-sm font-light tracking-wide text-zinc-400">
+          No credit card required
+        </p>
       </div>
-
-      <DashboardPreview />
     </section>
   );
 }

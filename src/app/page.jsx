@@ -1,6 +1,8 @@
 import TopNavBar from "@/components/TopNavBar";
 import HeroSection from "@/components/HeroSection";
-import FeatureSpotlight from "@/components/FeatureSpotlight";
+import ProductPreview from "@/components/ProductPreview";
+import FeaturesBento from "@/components/FeaturesBento";
+import SocialProof from "@/components/SocialProof";
 import CtaSection from "@/components/CtaSection";
 import SiteFooter from "@/components/SiteFooter";
 
@@ -9,9 +11,11 @@ export default function Home() {
   return (
     <>
       <TopNavBar />
-      <main>
+      <main className="pt-32">
         <HeroSection />
-        <FeatureSpotlight />
+        <ProductPreview />
+        <FeaturesBento />
+        <SocialProof />
         <CtaSection />
       </main>
       <SiteFooter />
