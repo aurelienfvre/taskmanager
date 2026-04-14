@@ -2,7 +2,7 @@
 export default function HeroSection() {
   return (
     <section className="mx-auto flex max-w-7xl flex-col items-center px-8 py-24 text-center md:py-48">
-      <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-500">
+      <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700">
         <span className="h-2 w-2 rounded-full bg-zinc-400" aria-hidden="true" />
         v2.0 is now live
       </div>
@@ -22,7 +22,7 @@ export default function HeroSection() {
         >
           Commencer
         </button>
-        <p className="text-sm font-light tracking-wide text-zinc-400">
+        <p className="text-sm font-light tracking-wide text-zinc-600">
           No credit card required
         </p>
       </div>

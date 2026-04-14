@@ -33,7 +33,7 @@ export default function ProductPreview() {
                       <a
                         href="#"
                         className={`flex items-center gap-2 rounded p-2 text-sm ${
-                          item.actif ? "bg-zinc-50 text-zinc-900" : "text-zinc-500"
+                          item.actif ? "bg-zinc-50 text-zinc-900" : "text-zinc-600"
                         }`}
                       >
                         <span className="material-symbols-outlined text-lg" aria-hidden="true">
@@ -91,7 +91,7 @@ export default function ProductPreview() {
                     >
                       {tache.titre}
                     </span>
-                    <span className="text-xs text-zinc-400">{tache.heure}</span>
+                    <span className="text-xs text-zinc-400" aria-hidden="true">{tache.heure}</span>
                   </li>
                 ))}
               </ul>
