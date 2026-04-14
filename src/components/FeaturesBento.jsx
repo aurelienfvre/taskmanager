@@ -47,6 +47,7 @@ export default function FeaturesBento() {
               alt="Code propre affiché sur un écran dans un espace de travail monochrome"
               width={800}
               height={450}
+              loading="lazy"
               className="rounded-lg border border-zinc-200 shadow-sm"
             />
           </div>

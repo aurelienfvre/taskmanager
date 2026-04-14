@@ -9,8 +9,9 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "TaskManager — QuietArchitect",
-  description: "Gérez vos tâches efficacement avec TaskManager.",
+  title: "TaskManager - Gestion de tâches",
+  description:
+    "TaskManager vous aide à organiser, prioriser et accomplir vos tâches au quotidien. Une approche minimaliste pour une productivité maximale.",
 };
 
 export default function RootLayout({ children }) {
@@ -20,19 +21,11 @@ export default function RootLayout({ children }) {
         {/* Préconnexion aux serveurs Google Fonts pour réduire la latence */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Icônes Material Symbols Outlined — chargement non-bloquant */}
+        {/* Icônes Material Symbols Outlined */}
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-          media="print"
-          onLoad="this.media='all'"
         />
-        <noscript>
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-          />
-        </noscript>
       </head>
       <body className="min-h-full flex flex-col font-[var(--font-inter)]">
         {children}
