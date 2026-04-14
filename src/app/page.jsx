@@ -13,31 +13,29 @@ import FilterBar from "@/components/FilterBar";
 import SiteFooter from "@/components/SiteFooter";
 
 // Tâches de démonstration affichées au premier rendu
+// — ordre intentionnellement mélangé pour que les deux tris soient visibles
 const TACHES_INITIALES = [
   {
     id: 1,
-    title: "Finaliser la stratégie de marque Q4",
-    description:
-      "Revoir les decks finaux et aligner les assets visuels pour le lancement éditorial.",
-    priority: "haute",
+    title: "Commander de l'encre d'archive pour le studio",
+    priority: "basse",
     completed: false,
-    date: "2024-04-01",
   },
   {
     id: 2,
     title: "Point hebdomadaire avec l'équipe design",
     description:
       "Discuter de la transition vers les nouveaux tokens du design system.",
-    priority: "moyenne",
+    priority: "haute",
     completed: true,
-    date: "2024-04-03",
   },
   {
     id: 3,
-    title: "Commander de l'encre d'archive pour le studio",
-    priority: "basse",
+    title: "Finaliser la stratégie de marque Q4",
+    description:
+      "Revoir les decks finaux et aligner les assets visuels pour le lancement éditorial.",
+    priority: "moyenne",
     completed: false,
-    date: "2024-04-05",
   },
 ];
 
@@ -87,17 +85,21 @@ export default function Home() {
     return true; // "toutes"
   });
 
-  // 3. Tri par priorité ou par date (sans muter le tableau source)
+  // 3. Tri par priorité ou par ordre de création (id)
   const tachesTriees = [...tachesFiltreesParStatut].sort((a, b) => {
     if (sortOrder === "priority") {
+      // Tri par niveau de priorité (haute → moyenne → basse)
       return (
         (ORDRE_PRIORITE[a.priority] ?? 99) -
         (ORDRE_PRIORITE[b.priority] ?? 99)
       );
     }
-    // Tri par date croissante (tâches sans date repoussées en fin)
-    return (a.date ?? "9999") < (b.date ?? "9999") ? -1 : 1;
+    // Tri par ordre de création : l'id est toujours présent et reflète l'ordre d'ajout
+    return a.id - b.id;
   });
+
+  // Vrai si une recherche ou un filtre non-défaut est actif
+  const isFiltre = searchQuery !== "" || filter !== "toutes";
 
   return (
     <>
@@ -159,6 +161,7 @@ export default function Home() {
             tasks={tachesTriees}
             onToggle={handleToggle}
             onDelete={handleDelete}
+            isFiltre={isFiltre}
           />
         </section>
 

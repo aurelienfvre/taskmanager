@@ -1,10 +1,41 @@
 import TaskItem from "./TaskItem";
 
 // Liste de tâches : affiche les TaskItem ou un message si la liste est vide
-export default function TaskList({ tasks, onToggle, onDelete }) {
+// isFiltre : true si une recherche ou un filtre est actif (pour adapter le message vide)
+export default function TaskList({ tasks, onToggle, onDelete, isFiltre = false }) {
   const estVide = tasks.length === 0;
 
-  // État vide : carte illustrée avec invite à créer une tâche
+  // État vide avec recherche/filtre actif : message spécifique
+  if (estVide && isFiltre) {
+    return (
+      <section>
+        <header className="mb-8 flex items-center justify-between">
+          <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-400">
+            Current Focus
+          </h2>
+        </header>
+
+        <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 bg-zinc-50 py-20">
+          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
+            <span
+              className="material-symbols-outlined text-3xl text-zinc-300"
+              aria-hidden="true"
+            >
+              search_off
+            </span>
+          </div>
+          <h3 className="mb-2 text-xl font-bold text-zinc-900">
+            Aucune tâche ne correspond
+          </h3>
+          <p className="max-w-xs text-center text-sm leading-relaxed text-zinc-500">
+            Essayez d&apos;affiner votre recherche ou de modifier les filtres appliqués.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  // État vide sans filtre : invite à créer une tâche
   if (estVide) {
     return (
       <section>
