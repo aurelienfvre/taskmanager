@@ -45,6 +45,8 @@ export default function FeaturesBento() {
             <img
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIAUHh9owuzsGGdOCD4qIVRLdlwtaeQVd4WKzyDIergoymn7m0LQIPVBb0CTw_lsG8bM2FTH7J8OaCHyiiU9VUD4yaSjCn9oc2FoIK-JcNlbfykiHRszkhmMJv09DtRebdaIi4ZsMM7Zz27pjfU794kZem6mPsXDBr8kbzCTzu4fglSZDl7vi4tHRhP08NG3eHxDqPrLyQt-7EKQVT4oAeE0Jegriy8TV4x4IGdoWz_f45cacCFsoPBv_1JsJSadCDf3zgqAVfPMPF"
               alt="Code propre affiché sur un écran dans un espace de travail monochrome"
+              width={800}
+              height={450}
               className="rounded-lg border border-zinc-200 shadow-sm"
             />
           </div>
