@@ -1,5 +1,5 @@
-import LoginForm from "@/components/LoginForm";
-import GuestGuard from "@/components/GuestGuard";
+import LoginForm from "@/components/auth/LoginForm";
+import GuestGuard from "@/components/auth/GuestGuard";
 
 // Page de connexion — protégée par GuestGuard (redirige vers / si déjà connecté)
 export default function LoginPage() {

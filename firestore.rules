@@ -1,0 +1,88 @@
+rules_version = '2';
+
+// Règles Firestore TaskManager
+// - users/{uid}/tasks : collection privée, accès réservé à l'utilisateur
+// - sharedLists : lecture pour tout membre, écriture selon rôle
+//   - rôles : 'admin' | 'editor' | 'viewer'
+//   - gestion des membres : admin uniquement (ou owner)
+//   - lecture/écriture des tâches : editor ou admin
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Tâches privées -------------------------------------------------
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /tasks/{taskId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // --- Listes partagées -----------------------------------------------
+    match /sharedLists/{listId} {
+      function estAuth() { return request.auth != null; }
+      function uid() { return request.auth.uid; }
+      function listData() { return resource.data; }
+
+      function estOwner() {
+        return estAuth() && listData().ownerId == uid();
+      }
+      function roleCourant() {
+        return listData().roles[uid()];
+      }
+      function estMembre() {
+        return estAuth() && (
+          estOwner() || (uid() in listData().roles)
+        );
+      }
+      function peutEditer() {
+        return estMembre() && (
+          estOwner() || roleCourant() == 'admin' || roleCourant() == 'editor'
+        );
+      }
+      function peutGerer() {
+        return estOwner() || (estMembre() && roleCourant() == 'admin');
+      }
+
+      // Lecture : tout membre
+      allow read: if estMembre();
+
+      // Création : l'appelant doit se nommer owner et s'ajouter comme admin
+      allow create: if estAuth()
+        && request.resource.data.ownerId == uid()
+        && request.resource.data.roles[uid()] == 'admin';
+
+      // Mise à jour du doc (gestion membres / rôles) : admin uniquement
+      allow update: if peutGerer();
+
+      // Suppression : owner uniquement
+      allow delete: if estOwner();
+
+      // --- Tâches de la liste partagée ---------------------------------
+      match /tasks/{taskId} {
+        function parentList() {
+          return get(/databases/$(database)/documents/sharedLists/$(listId)).data;
+        }
+        function roleDansParent() {
+          return parentList().roles[request.auth.uid];
+        }
+        function estMembreParent() {
+          return request.auth != null && (
+            parentList().ownerId == request.auth.uid ||
+            (request.auth.uid in parentList().roles)
+          );
+        }
+        function peutEditerParent() {
+          return estMembreParent() && (
+            parentList().ownerId == request.auth.uid ||
+            roleDansParent() == 'admin' ||
+            roleDansParent() == 'editor'
+          );
+        }
+
+        allow read: if estMembreParent();
+        allow create, update, delete: if peutEditerParent();
+      }
+    }
+  }
+}

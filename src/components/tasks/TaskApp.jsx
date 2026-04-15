@@ -2,22 +2,33 @@
 
 import { useState } from "react";
 import TaskList from "./TaskList";
-import Dashboard from "./Dashboard";
-import AddTaskForm from "./AddTaskForm";
-import TaskToolbar from "./TaskToolbar";
+import Dashboard from "@/components/dashboard/Dashboard";
+import TaskControlsBar from "./TaskControlsBar";
 import { useAuth } from "@/contexts/AuthContext";
 import useUserTasks from "@/hooks/useUserTasks";
 import { filtrerEtTrierTaches } from "@/lib/taskFilters";
 
-// Section interactive de gestion des tâches (Client Component)
+// Section interactive de gestion des tâches (Client Component).
+// Plus de gros header marketing : le DashboardView porte déjà le titre.
 export default function TaskApp() {
   const { user } = useAuth();
-  const { tasks, loading, erreur, toggleTask, deleteTask, addTask, ajoutEnCours } =
-    useUserTasks(user?.uid);
+  const {
+    tasks,
+    loading,
+    erreur,
+    toggleTask,
+    deleteTask,
+    addTask,
+    reorderTasks,
+    updateTaskPriority,
+    ajoutEnCours,
+  } = useUserTasks(user?.uid);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("toutes");
-  const [sortOrder, setSortOrder] = useState("priority");
+  // "manuel" par défaut pour que le D&D soit stable : tout autre tri
+  // réécrirait l'ordre visuel juste après un drop.
+  const [sortOrder, setSortOrder] = useState("manuel");
 
   const tachesTriees = filtrerEtTrierTaches(tasks, {
     searchQuery,
@@ -29,23 +40,13 @@ export default function TaskApp() {
   return (
     <section
       aria-label="Gestionnaire de tâches"
-      className="mx-auto max-w-5xl px-6 py-24 lg:px-12"
+      className="flex flex-col gap-6"
     >
-      <header className="mb-16">
-        <h2 className="mb-4 text-5xl font-bold tracking-tighter text-zinc-900">
-          Vos tâches
-        </h2>
-        <p className="max-w-2xl text-lg leading-relaxed text-zinc-500">
-          Ajoutez, cochez ou supprimez vos tâches. Les changements sont
-          synchronisés en temps réel avec votre compte.
-        </p>
-      </header>
-
       <Dashboard tasks={tasks} />
 
-      <AddTaskForm onAdd={addTask} ajoutEnCours={ajoutEnCours} />
-
-      <TaskToolbar
+      <TaskControlsBar
+        onAdd={addTask}
+        ajoutEnCours={ajoutEnCours}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         filter={filter}
@@ -56,14 +57,14 @@ export default function TaskApp() {
 
       {/* Priorité d'affichage : erreur > chargement > liste */}
       {erreur ? (
-        <p role="alert" className="py-12 text-center text-sm text-red-600">
+        <p role="alert" className="py-8 text-center text-sm text-red-600">
           {erreur}
         </p>
       ) : loading ? (
         <p
           role="status"
           aria-live="polite"
-          className="py-12 text-center text-sm text-zinc-500"
+          className="py-8 text-center text-sm text-zinc-500"
         >
           Chargement de vos tâches…
         </p>
@@ -72,6 +73,9 @@ export default function TaskApp() {
           tasks={tachesTriees}
           onToggle={toggleTask}
           onDelete={deleteTask}
+          onReorder={reorderTasks}
+          onChangePriority={updateTaskPriority}
+          canDrag={sortOrder === "manuel"}
           isFiltre={isFiltre}
         />
       )}

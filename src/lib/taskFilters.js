@@ -15,6 +15,10 @@ export function filtrerEtTrierTaches(tasks, { searchQuery, filter, sortOrder }) 
     return true;
   });
 
+  // Mode "manuel" : on conserve l'ordre Firestore (déjà trié par `order` asc)
+  // pour que le drag & drop reste stable après un drop.
+  if (sortOrder === "manuel") return filtrees;
+
   return [...filtrees].sort((a, b) => {
     if (sortOrder === "priority") {
       return (

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import PasswordField from "./PasswordField";
 
 // Formulaire de connexion par email + mot de passe
 export default function LoginForm() {
@@ -25,6 +26,8 @@ export default function LoginForm() {
     } catch (err) {
       // Message générique : ne pas révéler si l'email existe (sécurité)
       setError("Email ou mot de passe incorrect.");
+    } finally {
+      // finally : si router.replace throw, on ne reste pas bloqué en submitting
       setSubmitting(false);
     }
   };
@@ -59,29 +62,17 @@ export default function LoginForm() {
         />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="login-password"
-          className="text-sm font-medium text-zinc-700"
-        >
-          Mot de passe
-        </label>
-        <input
-          id="login-password"
-          type="password"
-          autoComplete="current-password"
-          required
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900"
-        />
-      </div>
+      <PasswordField
+        id="login-password"
+        label="Mot de passe"
+        value={password}
+        onChange={(event) => setPassword(event.target.value)}
+        autoComplete="current-password"
+        required
+      />
 
       {error && (
-        <p
-          role="alert"
-          className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
-        >
+        <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {error}
         </p>
       )}

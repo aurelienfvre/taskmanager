@@ -1,27 +1,15 @@
-import TopNavBar from "@/components/TopNavBar";
-import HeroSection from "@/components/HeroSection";
-import ProductPreview from "@/components/ProductPreview";
-import FeaturesBento from "@/components/FeaturesBento";
-import SocialProof from "@/components/SocialProof";
-import CtaSection from "@/components/CtaSection";
-import TaskApp from "@/components/TaskApp";
-import SiteFooter from "@/components/SiteFooter";
-import AuthGuard from "@/components/AuthGuard";
+"use client";
 
-// Page d'accueil — protégée par AuthGuard (redirige vers /login si non connecté)
+import { useAuth } from "@/contexts/AuthContext";
+import LandingView from "@/components/landing/LandingView";
+import DashboardView from "@/components/dashboard/DashboardView";
+
+// Page d'accueil : AppShell gère déjà le loading et la bifurcation sidebar/
+// TopNavBar. Ici on choisit juste quel contenu afficher (landing / dashboard).
 export default function Home() {
-  return (
-    <AuthGuard>
-      <TopNavBar />
-      <main className="pt-32">
-        <HeroSection />
-        <ProductPreview />
-        <FeaturesBento />
-        <SocialProof />
-        <TaskApp />
-        <CtaSection />
-      </main>
-      <SiteFooter />
-    </AuthGuard>
-  );
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+  if (user === null) return <LandingView />;
+  return <DashboardView email={user.email} />;
 }

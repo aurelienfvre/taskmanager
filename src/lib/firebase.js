@@ -1,6 +1,11 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  getFirestore,
+} from "firebase/firestore";
 
 // Configuration Firebase chargée depuis les variables d'environnement Next.js
 const firebaseConfig = {
@@ -16,5 +21,26 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+
+// Tente d'activer le cache local persistant (mode hors-ligne). Si ça échoue
+// — typiquement quand initializeFirestore a déjà été appelé via HMR ou
+// quand l'environnement ne supporte pas IndexedDB — on retombe sur un
+// getFirestore classique pour ne pas bloquer l'appli.
+function creerFirestore() {
+  try {
+    return initializeFirestore(app, {
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager(),
+      }),
+    });
+  } catch (error) {
+    console.warn(
+      "Persistance Firestore indisponible, fallback sur getFirestore :",
+      error,
+    );
+    return getFirestore(app);
+  }
+}
+
+export const db = creerFirestore();
 export default app;

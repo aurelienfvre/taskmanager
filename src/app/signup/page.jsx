@@ -1,5 +1,5 @@
-import SignupForm from "@/components/SignupForm";
-import GuestGuard from "@/components/GuestGuard";
+import SignupForm from "@/components/auth/SignupForm";
+import GuestGuard from "@/components/auth/GuestGuard";
 
 // Page d'inscription — protégée par GuestGuard (redirige vers / si déjà connecté)
 export default function SignupPage() {

@@ -15,3 +15,16 @@ body {
   /* Couleur de texte par défaut — contraste 15:1 sur fond blanc ✓ */
   color: var(--foreground);
 }
+
+/* Chevron custom pour les <select> : la flèche native est collée au bord
+   droit dans la plupart des navigateurs. On masque l'apparence native et on
+   dessine une flèche SVG positionnée avec une marge droite franche. */
+.select-chevron {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%2352525b' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='1.5 2 6 6.5 10.5 2'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.75rem;
+}

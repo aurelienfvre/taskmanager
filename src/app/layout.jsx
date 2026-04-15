@@ -1,5 +1,7 @@
 import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
 import { AuthProvider } from "@/contexts/AuthContext";
+import AppShell from "@/components/layout/AppShell";
 import "./globals.css";
 
 // Police principale du projet
@@ -28,8 +30,11 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         />
       </head>
-      <body className="min-h-full flex flex-col font-[var(--font-inter)]">
-        <AuthProvider>{children}</AuthProvider>
+      <body className="min-h-full font-[var(--font-inter)]">
+        <AuthProvider>
+          <AppShell>{children}</AppShell>
+          <Toaster position="bottom-right" richColors closeButton />
+        </AuthProvider>
       </body>
     </html>
   );

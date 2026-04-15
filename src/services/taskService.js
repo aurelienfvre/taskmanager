@@ -9,6 +9,7 @@ import {
   query,
   orderBy,
   serverTimestamp,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -16,10 +17,11 @@ import { db } from "@/lib/firebase";
 const getTasksCollection = (userId) =>
   collection(db, "users", userId, "tasks");
 
-// Récupère toutes les tâches d'un utilisateur, triées par date décroissante
+// Récupère toutes les tâches d'un utilisateur, triées par ordre manuel
+// (champ `order`) avec fallback sur createdAt.
 export async function getUserTasks(userId) {
   try {
-    const q = query(getTasksCollection(userId), orderBy("createdAt", "desc"));
+    const q = query(getTasksCollection(userId), orderBy("order", "asc"));
     const snapshot = await getDocs(q);
     return snapshot.docs.map((document) => ({
       id: document.id,
@@ -31,13 +33,17 @@ export async function getUserTasks(userId) {
   }
 }
 
-// Ajoute une nouvelle tâche avec les valeurs par défaut forcées
+// Ajoute une nouvelle tâche. Le champ `order` est positionné en fin de
+// liste (Date.now) pour que les nouvelles tâches apparaissent en bas sans
+// nécessiter un count préalable.
 export async function addTask(userId, task) {
   try {
     const docRef = await addDoc(getTasksCollection(userId), {
-      ...task,
+      title: task.title,
+      description: task.description ?? null,
+      priority: task.priority ?? "medium",
       completed: false,
-      priority: "medium",
+      order: task.order ?? Date.now(),
       createdAt: serverTimestamp(),
     });
     return docRef.id;
@@ -69,13 +75,28 @@ export async function deleteTask(userId, taskId) {
   }
 }
 
+// Persiste un nouvel ordre des tâches en un seul batch pour éviter les
+// incohérences visuelles si une écriture échouait au milieu.
+export async function reorderTasks(userId, orderedIds) {
+  try {
+    const batch = writeBatch(db);
+    orderedIds.forEach((id, index) => {
+      batch.update(doc(db, "users", userId, "tasks", id), { order: index });
+    });
+    await batch.commit();
+  } catch (error) {
+    console.error("Erreur lors du réordonnancement des tâches :", error);
+    throw error;
+  }
+}
+
 // Écoute en temps réel les changements de tâches et retourne la fonction
 // de désabonnement à appeler au démontage du composant.
 // onError (optionnel) permet à l'appelant de réagir à une erreur du listener
 // (ex. afficher un message d'erreur à l'utilisateur).
 export function subscribeToTasks(userId, callback, onError) {
   try {
-    const q = query(getTasksCollection(userId), orderBy("createdAt", "desc"));
+    const q = query(getTasksCollection(userId), orderBy("order", "asc"));
     return onSnapshot(
       q,
       (snapshot) => {

@@ -4,9 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   addTask as addTaskService,
   deleteTask as deleteTaskService,
+  reorderTasks as reorderTasksService,
   subscribeToTasks,
   updateTask,
 } from "@/services/taskService";
+import { toast } from "sonner";
 
 // Hook centralisant toute la logique Firestore : abonnement temps réel,
 // état local et mutations protégées contre les doubles-clics.
@@ -18,6 +20,13 @@ export default function useUserTasks(uid) {
   // useRef plutôt qu'un state : les verrous ne doivent pas déclencher de
   // re-render et doivent être lus de façon synchrone par les handlers.
   const idsEnMutation = useRef(new Set());
+  // Miroir de `tasks` lisible depuis les callbacks sans les recréer à chaque
+  // mutation (sinon chaque tick Firestore invalide toggleTask et ses consumers)
+  const tasksRef = useRef([]);
+
+  useEffect(() => {
+    tasksRef.current = tasks;
+  }, [tasks]);
 
   useEffect(() => {
     if (!uid) {
@@ -50,7 +59,7 @@ export default function useUserTasks(uid) {
     async (id) => {
       if (!uid) return;
       if (idsEnMutation.current.has(id)) return;
-      const tache = tasks.find((t) => t.id === id);
+      const tache = tasksRef.current.find((t) => t.id === id);
       if (!tache) return;
       idsEnMutation.current.add(id);
       try {
@@ -61,7 +70,7 @@ export default function useUserTasks(uid) {
         idsEnMutation.current.delete(id);
       }
     },
-    [uid, tasks],
+    [uid],
   );
 
   const deleteTask = useCallback(
@@ -71,8 +80,10 @@ export default function useUserTasks(uid) {
       idsEnMutation.current.add(id);
       try {
         await deleteTaskService(uid, id);
+        toast.success("Tâche supprimée");
       } catch (error) {
         console.error("Impossible de supprimer la tâche :", error);
+        toast.error("Impossible de supprimer la tâche");
       } finally {
         idsEnMutation.current.delete(id);
       }
@@ -81,16 +92,25 @@ export default function useUserTasks(uid) {
   );
 
   const addTask = useCallback(
-    async (titre) => {
+    async (titre, priorite = "medium") => {
       if (!uid) return;
       if (ajoutEnCours) return;
       const titreNettoye = titre.trim();
       if (titreNettoye === "") return;
+      // Garde-fou : n'importe quelle valeur hors liste blanche retombe sur medium
+      const prioriteValide = ["high", "medium", "low"].includes(priorite)
+        ? priorite
+        : "medium";
       setAjoutEnCours(true);
       try {
-        await addTaskService(uid, { title: titreNettoye });
+        await addTaskService(uid, {
+          title: titreNettoye,
+          priority: prioriteValide,
+        });
+        toast.success("Tâche ajoutée");
       } catch (error) {
         console.error("Impossible d'ajouter la tâche :", error);
+        toast.error("Impossible d'ajouter la tâche");
       } finally {
         setAjoutEnCours(false);
       }
@@ -98,5 +118,55 @@ export default function useUserTasks(uid) {
     [uid, ajoutEnCours],
   );
 
-  return { tasks, loading, erreur, toggleTask, deleteTask, addTask, ajoutEnCours };
+  // Réordonnancement optimiste : on met d'abord à jour l'UI puis Firestore.
+  // En cas d'échec, on se contente d'un toast ; le prochain snapshot
+  // ré-alignera l'état local sur la vérité serveur.
+  const reorderTasks = useCallback(
+    async (orderedIds) => {
+      if (!uid) return;
+      const idToTask = new Map(tasksRef.current.map((t) => [t.id, t]));
+      const optimistes = orderedIds
+        .map((id, index) => {
+          const t = idToTask.get(id);
+          return t ? { ...t, order: index } : null;
+        })
+        .filter(Boolean);
+      setTasks(optimistes);
+      try {
+        await reorderTasksService(uid, orderedIds);
+      } catch (error) {
+        console.error("Impossible de réordonner les tâches :", error);
+        toast.error("Impossible de sauvegarder le nouvel ordre");
+      }
+    },
+    [uid],
+  );
+
+  // Change la priorité d'une tâche (cycle depuis le badge cliquable).
+  // Valide la valeur côté client pour éviter une écriture Firestore inutile.
+  const updateTaskPriority = useCallback(
+    async (id, priorite) => {
+      if (!uid) return;
+      if (!["high", "medium", "low"].includes(priorite)) return;
+      try {
+        await updateTask(uid, id, { priority: priorite });
+      } catch (error) {
+        console.error("Impossible de changer la priorité :", error);
+        toast.error("Impossible de changer la priorité");
+      }
+    },
+    [uid],
+  );
+
+  return {
+    tasks,
+    loading,
+    erreur,
+    toggleTask,
+    deleteTask,
+    addTask,
+    reorderTasks,
+    updateTaskPriority,
+    ajoutEnCours,
+  };
 }
