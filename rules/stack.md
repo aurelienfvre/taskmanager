@@ -21,3 +21,13 @@ Commente le code en français.
 Pour les pages Next.js, utilise le App Router (src/app/).
 
 Exporte les composants de page par défaut (export default).
+
+Composants existants :
+
+TaskItem : affiche une tâche individuelle.
+
+TaskList : affiche la liste des tâches.
+
+SearchBar : barre de recherche.
+
+FilterBar : filtres par statut (toutes/actives/complétées).

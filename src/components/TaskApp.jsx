@@ -4,6 +4,7 @@ import { useState } from "react";
 import TaskList from "./TaskList";
 import SearchBar from "./SearchBar";
 import FilterBar from "./FilterBar";
+import Dashboard from "./Dashboard";
 
 // Tâches de démonstration affichées au premier rendu
 // — ordre intentionnellement mélangé pour que les deux tris soient visibles
@@ -101,8 +102,11 @@ export default function TaskApp() {
         </p>
       </header>
 
+      {/* Tableau de bord : statistiques + progression globale */}
+      <Dashboard tasks={tasks} />
+
       {/* Barre d'outils : recherche, filtres, tri */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-8 mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Recherche textuelle */}
         <div className="w-full sm:max-w-xs">
           <SearchBar
