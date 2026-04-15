@@ -6,13 +6,12 @@ import SocialProof from "@/components/SocialProof";
 import CtaSection from "@/components/CtaSection";
 import TaskApp from "@/components/TaskApp";
 import SiteFooter from "@/components/SiteFooter";
+import AuthGuard from "@/components/AuthGuard";
 
-// Page d'accueil — Server Component
-// Les sections statiques sont rendues en HTML au build (pas de JS client).
-// Seul TaskApp est un Client Component (gère l'état des tâches).
+// Page d'accueil — protégée par AuthGuard (redirige vers /login si non connecté)
 export default function Home() {
   return (
-    <>
+    <AuthGuard>
       <TopNavBar />
       <main className="pt-32">
         <HeroSection />
@@ -23,6 +22,6 @@ export default function Home() {
         <CtaSection />
       </main>
       <SiteFooter />
-    </>
+    </AuthGuard>
   );
 }
