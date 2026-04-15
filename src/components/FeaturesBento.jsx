@@ -24,7 +24,6 @@ export default function FeaturesBento() {
   return (
     <section className="mx-auto max-w-7xl px-8 py-24">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {/* Fonctionnalité principale (large) */}
         <article className="flex aspect-video flex-col justify-between rounded-2xl bg-zinc-100 p-12 md:col-span-2 md:aspect-auto">
           <div>
             <span
@@ -53,7 +52,6 @@ export default function FeaturesBento() {
           </div>
         </article>
 
-        {/* Fonctionnalité mise en avant (fond sombre) */}
         <article className="flex flex-col justify-between rounded-2xl bg-zinc-900 p-12 text-zinc-50">
           <div>
             <span
@@ -77,7 +75,6 @@ export default function FeaturesBento() {
           </div>
         </article>
 
-        {/* Fonctionnalités secondaires */}
         {petitesFonctionnalites.map((fonctionnalite) => (
           <article
             key={fonctionnalite.titre}

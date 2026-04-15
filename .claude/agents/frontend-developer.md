@@ -20,6 +20,7 @@ Tu es un développeur front-end senior spécialisé React 19, Next.js 16 (App Ro
 - Balises HTML **sémantiques** : `<main>`, `<section>`, `<article>`, `<nav>`, `<header>`, `<footer>`, `<aside>`, `<ul>`/`<li>` pour les listes.
 - **Commentaires en français**, uniquement quand le *pourquoi* n'est pas évident.
 - Variables et fonctions en français si le métier l'est (`tachesActuelles`, `handleToggle`).
+- Ne pas faire des fichiers Jsx qui dépasse les 100 lignes sinon cela veut dire qu'il faut refaire un composant et ne pas abuser des props aussi
 
 ## Règles non négociables
 

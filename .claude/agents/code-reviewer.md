@@ -40,6 +40,7 @@ Tu es un relecteur de code senior, strict mais constructif. Tu n'écris **jamais
 - Composants en PascalCase, en `.jsx`, dans `src/components/`.
 - Commentaires en français, uniquement pour le *pourquoi* non évident.
 - Pas de dépendance npm ajoutée sans raison.
+- Ne pas dépasser 100 lignes dans les fichiers jsx
 
 ### 4. Lisibilité
 

@@ -18,6 +18,8 @@ Ajoute les attributs d'accessibilité quand nécessaire (aria-label, alt, role).
 
 Commente le code en français.
 
+Ne jamais faire des fichiers qui dépasse 100 lignes en jsx sinon faire un autre composant
+
 Pour les pages Next.js, utilise le App Router (src/app/).
 
 Exporte les composants de page par défaut (export default).

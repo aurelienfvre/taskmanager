@@ -1,78 +1,13 @@
 import TaskItem from "./TaskItem";
+import TaskListEmpty from "./TaskListEmpty";
 
-// Liste de tâches : affiche les TaskItem ou un message si la liste est vide
-// isFiltre : true si une recherche ou un filtre est actif (pour adapter le message vide)
+// Liste de tâches : affiche les TaskItem ou un état vide adapté.
+// isFiltre : true si une recherche ou un filtre est actif.
 export default function TaskList({ tasks, onToggle, onDelete, isFiltre = false }) {
-  const estVide = tasks.length === 0;
-
-  // État vide avec recherche/filtre actif : message spécifique
-  if (estVide && isFiltre) {
-    return (
-      <section>
-        <header className="mb-8 flex items-center justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-400">
-            Current Focus
-          </h2>
-        </header>
-
-        <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 bg-zinc-50 py-20">
-          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
-            <span
-              className="material-symbols-outlined text-3xl text-zinc-300"
-              aria-hidden="true"
-            >
-              search_off
-            </span>
-          </div>
-          <h3 className="mb-2 text-xl font-bold text-zinc-900">
-            Aucune tâche ne correspond
-          </h3>
-          <p className="max-w-xs text-center text-sm leading-relaxed text-zinc-500">
-            Essayez d&apos;affiner votre recherche ou de modifier les filtres appliqués.
-          </p>
-        </div>
-      </section>
-    );
+  if (tasks.length === 0) {
+    return <TaskListEmpty isFiltre={isFiltre} />;
   }
 
-  // État vide sans filtre : invite à créer une tâche
-  if (estVide) {
-    return (
-      <section>
-        <header className="mb-8 flex items-center justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-400">
-            Current Focus
-          </h2>
-        </header>
-
-        <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 bg-zinc-50 py-20">
-          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
-            <span
-              className="material-symbols-outlined text-3xl text-zinc-300"
-              aria-hidden="true"
-            >
-              draw
-            </span>
-          </div>
-          <h3 className="mb-2 text-xl font-bold text-zinc-900">
-            Aucune tâche pour le moment
-          </h3>
-          <p className="max-w-xs text-center text-sm leading-relaxed text-zinc-500">
-            Votre file éditoriale est vide. Profitez de ce moment pour réfléchir,
-            explorer de nouvelles idées ou simplement respirer.
-          </p>
-          <button
-            type="button"
-            className="mt-8 cursor-pointer border-b-2 border-zinc-900 pb-1 text-sm font-bold transition-all hover:border-zinc-400 hover:text-zinc-600"
-          >
-            Créer une tâche
-          </button>
-        </div>
-      </section>
-    );
-  }
-
-  // État normal : en-tête avec compteur puis liste des tâches
   return (
     <section>
       <header className="mb-8 flex items-center justify-between">
