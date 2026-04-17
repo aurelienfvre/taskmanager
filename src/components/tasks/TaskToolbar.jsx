@@ -1,5 +1,3 @@
-"use client";
-
 import SearchBar from "./SearchBar";
 import FilterBar from "./FilterBar";
 

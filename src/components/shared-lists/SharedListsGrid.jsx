@@ -1,5 +1,3 @@
-"use client";
-
 import SharedListCard from "./SharedListCard";
 
 // Grille responsive des listes partagées + état vide. Extrait de la page

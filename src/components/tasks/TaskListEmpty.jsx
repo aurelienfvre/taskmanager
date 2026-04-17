@@ -1,6 +1,6 @@
 // État vide de la liste : variante filtrée vs. vide initiale. Extrait pour
 // éviter la duplication quasi-identique du conteneur dans TaskList.
-export default function TaskListEmpty({ isFiltre }) {
+export default function TaskListEmpty({ isFiltre, onAdd }) {
   const contenu = isFiltre
     ? {
         icone: "search_off",
@@ -18,8 +18,8 @@ export default function TaskListEmpty({ isFiltre }) {
   return (
     <section>
       <header className="mb-8 flex items-center justify-between">
-        <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-400">
-          Current Focus
+        <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-600">
+          Tâches du moment
         </h2>
       </header>
 
@@ -33,12 +33,13 @@ export default function TaskListEmpty({ isFiltre }) {
           </span>
         </div>
         <h3 className="mb-2 text-xl font-bold text-zinc-900">{contenu.titre}</h3>
-        <p className="max-w-xs text-center text-sm leading-relaxed text-zinc-500">
+        <p className="max-w-xs text-center text-sm leading-relaxed text-zinc-700">
           {contenu.message}
         </p>
-        {!isFiltre && (
+        {!isFiltre && typeof onAdd === "function" && (
           <button
             type="button"
+            onClick={() => onAdd("Nouvelle tâche")}
             className="mt-8 cursor-pointer border-b-2 border-zinc-900 pb-1 text-sm font-bold transition-all hover:border-zinc-400 hover:text-zinc-600"
           >
             Créer une tâche

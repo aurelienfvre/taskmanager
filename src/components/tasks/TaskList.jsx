@@ -28,6 +28,7 @@ export default function TaskList({
   onToggle,
   onDelete,
   onReorder,
+  onAdd,
   onChangePriority,
   canDrag = true,
   isFiltre = false,
@@ -38,7 +39,7 @@ export default function TaskList({
   );
 
   if (tasks.length === 0) {
-    return <TaskListEmpty isFiltre={isFiltre} />;
+    return <TaskListEmpty isFiltre={isFiltre} onAdd={onAdd} />;
   }
 
   const handleDragEnd = (event) => {

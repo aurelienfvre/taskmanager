@@ -4,13 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { getAuthErrorMessage } from "@/lib/authErrors";
 import PasswordField from "./PasswordField";
 
-// Formulaire de connexion par email + mot de passe
 export default function LoginForm() {
   const { login } = useAuth();
   const router = useRouter();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -24,62 +23,43 @@ export default function LoginForm() {
       await login(email, password);
       router.replace("/");
     } catch (err) {
-      // Message générique : ne pas révéler si l'email existe (sécurité)
-      setError("Email ou mot de passe incorrect.");
+      setError(getAuthErrorMessage(err, "Impossible de se connecter pour le moment. Réessayez."));
     } finally {
-      // finally : si router.replace throw, on ne reste pas bloqué en submitting
       setSubmitting(false);
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      noValidate
-      className="flex w-full max-w-sm flex-col gap-6"
-    >
+    <form onSubmit={handleSubmit} noValidate className="flex w-full max-w-sm flex-col gap-6">
       <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tighter text-zinc-900">
-          Connexion
-        </h1>
-        <p className="text-sm text-zinc-600">
-          Accédez à votre tableau de bord TaskManager.
-        </p>
+        <h1 className="text-3xl font-bold tracking-tighter text-zinc-900">Connexion</h1>
+        <p className="text-sm text-zinc-600">Accédez à votre tableau de bord TaskManager.</p>
       </header>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor="login-email" className="text-sm font-medium text-zinc-700">
-          Email
-        </label>
+        <label htmlFor="login-email" className="text-sm font-medium text-zinc-700">Email</label>
         <input
-          id="login-email"
-          type="email"
-          autoComplete="email"
-          required
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          id="login-email" type="email" autoComplete="email" required value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          aria-invalid={Boolean(error)} aria-describedby={error ? "login-auth-error" : undefined}
           className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900"
         />
       </div>
 
       <PasswordField
-        id="login-password"
-        label="Mot de passe"
-        value={password}
-        onChange={(event) => setPassword(event.target.value)}
-        autoComplete="current-password"
-        required
+        id="login-password" label="Mot de passe" value={password}
+        onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required
+        ariaInvalid={Boolean(error)} ariaDescribedBy={error ? "login-auth-error" : undefined}
       />
 
       {error && (
-        <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p id="login-auth-error" role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {error}
         </p>
       )}
 
       <button
-        type="submit"
-        disabled={submitting}
+        type="submit" disabled={submitting}
         className="cursor-pointer rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-zinc-800 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {submitting ? "Connexion…" : "Se connecter"}
@@ -87,10 +67,7 @@ export default function LoginForm() {
 
       <p className="text-center text-sm text-zinc-600">
         Pas encore de compte ?{" "}
-        <Link
-          href="/signup"
-          className="font-medium text-zinc-900 underline underline-offset-4 hover:text-zinc-700"
-        >
+        <Link href="/signup" className="font-medium text-zinc-900 underline underline-offset-4 hover:text-zinc-700">
           Créer un compte
         </Link>
       </p>

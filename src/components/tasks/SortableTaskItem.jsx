@@ -17,6 +17,7 @@ export default function SortableTaskItem({ task, onToggle, onDelete, onChangePri
     isDragging,
   } = useSortable({ id: task.id, disabled: !canDrag });
 
+  // Entorse assumée : Tailwind ne peut pas exprimer un transform dynamique runtime
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -30,7 +31,7 @@ export default function SortableTaskItem({ task, onToggle, onDelete, onChangePri
           type="button"
           {...attributes}
           {...listeners}
-          aria-label={`Déplacer la tâche "${task.title}"`}
+          aria-label={`Déplacer la tâche "${task.title}". Espace pour saisir, flèches pour déplacer, Espace pour déposer.`}
           className="flex cursor-grab touch-none items-center px-2 text-zinc-400 hover:text-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-900 active:cursor-grabbing"
         >
           <span className="material-symbols-outlined text-xl" aria-hidden="true">

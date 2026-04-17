@@ -1,16 +1,19 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import useAccountActions from "@/hooks/useAccountActions";
 
 // Actions d'auth de la navbar. Extrait dans un composant dédié pour garder
 // TopNavBar sous la limite de 100 lignes.
 export default function NavAuthActions() {
-  const { user, loading, logout, deleteAccount } = useAuth();
-  const [deconnexionEnCours, setDeconnexionEnCours] = useState(false);
-  const [suppressionEnCours, setSuppressionEnCours] = useState(false);
+  const { user, loading } = useAuth();
+  const {
+    handleLogout,
+    handleDelete,
+    deconnexionEnCours,
+    suppressionEnCours,
+  } = useAccountActions();
 
   // Placeholder de même gabarit pour éviter le layout shift pendant le check
   // initial d'authentification.
@@ -23,54 +26,19 @@ export default function NavAuthActions() {
       <div className="flex items-center gap-4">
         <Link
           href="/login"
-          className="text-sm font-medium text-zinc-600 transition-colors duration-200 ease-in-out hover:text-zinc-900"
+          className="rounded-md text-sm font-medium text-zinc-600 transition-colors duration-200 ease-in-out hover:text-zinc-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2"
         >
-          Sign In
+          Se connecter
         </Link>
         <Link
           href="/signup"
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-50 transition-all duration-200 hover:bg-zinc-800"
+          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-50 transition-all duration-200 hover:bg-zinc-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2"
         >
-          Get Started
+          Commencer
         </Link>
       </div>
     );
   }
-
-  const handleLogout = async () => {
-    if (deconnexionEnCours) return;
-    setDeconnexionEnCours(true);
-    try {
-      await logout();
-    } catch (error) {
-      console.error("Impossible de se déconnecter :", error);
-      toast.error("Impossible de se déconnecter");
-    } finally {
-      setDeconnexionEnCours(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (suppressionEnCours) return;
-    const confirme = window.confirm(
-      "Supprimer votre compte ? Toutes vos tâches seront perdues et cette action est irréversible.",
-    );
-    if (!confirme) return;
-    setSuppressionEnCours(true);
-    try {
-      await deleteAccount();
-      toast.success("Compte supprimé");
-    } catch (error) {
-      console.error("Impossible de supprimer le compte :", error);
-      if (error?.code === "auth/requires-recent-login") {
-        toast.error("Reconnectez-vous puis réessayez la suppression.");
-      } else {
-        toast.error("Impossible de supprimer le compte");
-      }
-    } finally {
-      setSuppressionEnCours(false);
-    }
-  };
 
   return (
     <div className="flex items-center gap-3">
@@ -81,7 +49,7 @@ export default function NavAuthActions() {
         type="button"
         onClick={handleLogout}
         disabled={deconnexionEnCours || suppressionEnCours}
-        className="cursor-pointer rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-50 transition-all duration-200 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
+        className="cursor-pointer rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-50 transition-all duration-200 hover:bg-zinc-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {deconnexionEnCours ? "Déconnexion…" : "Se déconnecter"}
       </button>

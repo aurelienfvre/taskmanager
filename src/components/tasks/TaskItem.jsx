@@ -1,5 +1,5 @@
-// Cycle des priorités utilisé par le badge cliquable : high → medium → low → high.
-const CYCLE_PRIORITE = { high: "medium", medium: "low", low: "high" };
+import TaskItemPriorityControl from "./TaskItemPriorityControl";
+import { libellesPriorite, stylesPriorite } from "./taskItemPriority";
 
 // Composant représentant une tâche unique dans une liste
 export default function TaskItem({
@@ -12,21 +12,6 @@ export default function TaskItem({
   onDelete,
   onChangePriority,
 }) {
-  // Styles du badge selon la priorité (palette monochrome de la maquette).
-  // Clés EN pour rester alignées avec Firestore et le tri.
-  const stylesPriorite = {
-    high: "bg-zinc-900 text-white",
-    medium: "bg-zinc-200 text-zinc-600",
-    low: "bg-zinc-100 text-zinc-500",
-  };
-
-  // Libellés FR visibles pour l'utilisateur, séparés des clés techniques
-  const libellesPriorite = {
-    high: "Haute",
-    medium: "Moyenne",
-    low: "Basse",
-  };
-
   const classeBadge = stylesPriorite[priority] ?? "bg-zinc-100 text-zinc-500";
   const libelleBadge = libellesPriorite[priority] ?? priority;
 
@@ -52,25 +37,22 @@ export default function TaskItem({
         <div className="mb-1 flex items-center gap-3">
           <h3
             className={`text-base font-semibold ${
-              completed ? "text-zinc-400 line-through" : "text-zinc-900"
+              completed ? "text-zinc-500 line-through" : "text-zinc-900"
             }`}
           >
             {title}
           </h3>
           {typeof onChangePriority === "function" ? (
-            <button
-              type="button"
-              onClick={() =>
-                onChangePriority(id, CYCLE_PRIORITE[priority] ?? "medium")
-              }
-              aria-label={`Changer la priorité de la tâche "${title}" (actuelle : ${libelleBadge})`}
-              className={`cursor-pointer rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-zinc-900 ${classeBadge}`}
-            >
-              {libelleBadge}
-            </button>
+            <TaskItemPriorityControl
+              id={id}
+              title={title}
+              priority={priority}
+              className={classeBadge}
+              onChangePriority={onChangePriority}
+            />
           ) : (
             <span
-              className={`rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${classeBadge}`}
+              className={`rounded-full px-2.5 py-1 text-xs font-semibold tracking-wide ${classeBadge}`}
             >
               {libelleBadge}
             </span>
@@ -93,7 +75,7 @@ export default function TaskItem({
           type="button"
           onClick={() => onDelete(id)}
           aria-label={`Supprimer la tâche "${title}"`}
-          className="cursor-pointer rounded-md p-2 text-zinc-400 opacity-0 transition-all hover:bg-red-50 hover:text-red-600 group-hover:opacity-100"
+          className="cursor-pointer rounded-md p-2 text-zinc-400 opacity-0 transition-all hover:bg-red-50 hover:text-red-600 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900"
         >
           <span className="material-symbols-outlined text-xl" aria-hidden="true">
             delete

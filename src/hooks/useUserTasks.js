@@ -17,11 +17,8 @@ export default function useUserTasks(uid) {
   const [loading, setLoading] = useState(true);
   const [erreur, setErreur] = useState(null);
   const [ajoutEnCours, setAjoutEnCours] = useState(false);
-  // useRef plutôt qu'un state : les verrous ne doivent pas déclencher de
-  // re-render et doivent être lus de façon synchrone par les handlers.
   const idsEnMutation = useRef(new Set());
-  // Miroir de `tasks` lisible depuis les callbacks sans les recréer à chaque
-  // mutation (sinon chaque tick Firestore invalide toggleTask et ses consumers)
+  const ajoutEnCoursRef = useRef(false);
   const tasksRef = useRef([]);
 
   useEffect(() => {
@@ -66,6 +63,7 @@ export default function useUserTasks(uid) {
         await updateTask(uid, id, { completed: !tache.completed });
       } catch (error) {
         console.error("Impossible de basculer la tâche :", error);
+        toast.error("Impossible de mettre à jour la tâche");
       } finally {
         idsEnMutation.current.delete(id);
       }
@@ -93,29 +91,28 @@ export default function useUserTasks(uid) {
 
   const addTask = useCallback(
     async (titre, priorite = "medium") => {
-      if (!uid) return;
-      if (ajoutEnCours) return;
+      if (!uid) return false;
+      if (ajoutEnCoursRef.current) return false;
+      if (typeof titre !== "string") return false;
       const titreNettoye = titre.trim();
-      if (titreNettoye === "") return;
-      // Garde-fou : n'importe quelle valeur hors liste blanche retombe sur medium
-      const prioriteValide = ["high", "medium", "low"].includes(priorite)
-        ? priorite
-        : "medium";
+      if (titreNettoye === "") return false;
+      const prioriteValide = ["high", "medium", "low"].includes(priorite) ? priorite : "medium";
+      ajoutEnCoursRef.current = true;
       setAjoutEnCours(true);
       try {
-        await addTaskService(uid, {
-          title: titreNettoye,
-          priority: prioriteValide,
-        });
+        await addTaskService(uid, { title: titreNettoye, priority: prioriteValide });
         toast.success("Tâche ajoutée");
+        return true;
       } catch (error) {
         console.error("Impossible d'ajouter la tâche :", error);
         toast.error("Impossible d'ajouter la tâche");
+        return false;
       } finally {
+        ajoutEnCoursRef.current = false;
         setAjoutEnCours(false);
       }
     },
-    [uid, ajoutEnCours],
+    [uid],
   );
 
   // Réordonnancement optimiste : on met d'abord à jour l'UI puis Firestore.
@@ -148,11 +145,16 @@ export default function useUserTasks(uid) {
     async (id, priorite) => {
       if (!uid) return;
       if (!["high", "medium", "low"].includes(priorite)) return;
+      const cleMutation = `priority-${id}`;
+      if (idsEnMutation.current.has(cleMutation)) return;
+      idsEnMutation.current.add(cleMutation);
       try {
         await updateTask(uid, id, { priority: priorite });
       } catch (error) {
         console.error("Impossible de changer la priorité :", error);
         toast.error("Impossible de changer la priorité");
+      } finally {
+        idsEnMutation.current.delete(cleMutation);
       }
     },
     [uid],

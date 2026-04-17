@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import UserMenu from "@/components/UserMenu";
 
 // Navigation latérale affichée uniquement aux utilisateurs connectés.
 // Icônes Material Symbols pour rester cohérent avec le reste de l'app.
@@ -13,21 +12,7 @@ const LIENS = [
 ];
 
 export default function Sidebar() {
-  const { user, logout } = useAuth();
   const pathname = usePathname();
-  const [deconnexionEnCours, setDeconnexionEnCours] = useState(false);
-
-  const handleLogout = async () => {
-    if (deconnexionEnCours) return;
-    setDeconnexionEnCours(true);
-    try {
-      await logout();
-    } catch (error) {
-      console.error("Impossible de se déconnecter :", error);
-    } finally {
-      setDeconnexionEnCours(false);
-    }
-  };
 
   return (
     <aside
@@ -73,20 +58,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="mt-auto border-t border-zinc-200 px-4 py-4">
-        <p
-          className="mb-2 truncate text-xs text-zinc-500"
-          title={user?.email ?? ""}
-        >
-          {user?.email ?? "Compte"}
-        </p>
-        <button
-          type="button"
-          onClick={handleLogout}
-          disabled={deconnexionEnCours}
-          className="w-full cursor-pointer rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-zinc-50 transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {deconnexionEnCours ? "Déconnexion…" : "Se déconnecter"}
-        </button>
+        <UserMenu />
       </div>
     </aside>
   );

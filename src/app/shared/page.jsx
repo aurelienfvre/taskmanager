@@ -22,11 +22,12 @@ function SharedPageContent() {
     setLoading(true);
     const unsub = subscribeToSharedLists(
       user.uid,
+      user.email,
       (l) => { setErreur(null); setListes(l); setLoading(false); },
       () => { setErreur("Impossible de charger les listes partagées."); setLoading(false); },
     );
     return () => { if (typeof unsub === "function") unsub(); };
-  }, [user?.uid]);
+  }, [user?.uid, user?.email]);
 
   // Garde anti-drift : si la liste ouverte disparaît (supprimée par un
   // autre utilisateur ou par nous-même), on revient à la grille.
@@ -37,8 +38,13 @@ function SharedPageContent() {
   }, [listes, listeOuverteId]);
 
   const handleCreate = async (nom) => {
+    setErreurAction(null);
     setCreationEnCours(true);
-    try { await createSharedList(user.uid, user.email, nom); }
+    try {
+      await createSharedList(user.uid, user.email, nom);
+    } catch (error) {
+      setErreurAction(error?.message ?? "Impossible de créer la liste.");
+    }
     finally { setCreationEnCours(false); }
   };
 

@@ -1,18 +1,28 @@
 "use client";
 
+import { useState } from "react";
+
 // Carte récapitulative d'une liste partagée. Boutons ouvrir/supprimer ;
 // suppression réservée au propriétaire.
 export default function SharedListCard({ list, currentUserId, onOpen, onDelete }) {
   const estProprietaire = list.ownerId === currentUserId;
   const nbMembres = list.memberEmails?.length ?? 0;
+  const [erreurAction, setErreurAction] = useState(null);
+  const [suppressionEnCours, setSuppressionEnCours] = useState(false);
 
   const handleDelete = async () => {
+    if (suppressionEnCours) return;
     // Confirmation simple : pas de modal custom vu la taille du projet
     if (!window.confirm(`Supprimer la liste « ${list.name} » ?`)) return;
+    setErreurAction(null);
+    setSuppressionEnCours(true);
     try {
       await onDelete(list.id);
     } catch (error) {
       console.error("Impossible de supprimer la liste :", error);
+      setErreurAction("Impossible de supprimer la liste. Réessayez.");
+    } finally {
+      setSuppressionEnCours(false);
     }
   };
 
@@ -32,6 +42,11 @@ export default function SharedListCard({ list, currentUserId, onOpen, onDelete }
       <p className="text-sm text-zinc-600">
         {nbMembres} membre{nbMembres > 1 ? "s" : ""}
       </p>
+      {erreurAction && (
+        <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+          {erreurAction}
+        </p>
+      )}
 
       <div className="mt-2 flex items-center gap-2">
         <button
@@ -46,10 +61,11 @@ export default function SharedListCard({ list, currentUserId, onOpen, onDelete }
           <button
             type="button"
             onClick={handleDelete}
-            className="cursor-pointer rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500"
+            disabled={suppressionEnCours}
+            className="cursor-pointer rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label={`Supprimer la liste ${list.name}`}
           >
-            Supprimer
+            {suppressionEnCours ? "Suppression..." : "Supprimer"}
           </button>
         )}
       </div>

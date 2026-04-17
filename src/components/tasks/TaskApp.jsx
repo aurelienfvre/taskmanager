@@ -73,6 +73,7 @@ export default function TaskApp() {
           tasks={tachesTriees}
           onToggle={toggleTask}
           onDelete={deleteTask}
+          onAdd={addTask}
           onReorder={reorderTasks}
           onChangePriority={updateTaskPriority}
           canDrag={sortOrder === "manuel"}

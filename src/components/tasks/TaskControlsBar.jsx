@@ -1,5 +1,3 @@
-"use client";
-
 import AddTaskForm from "./AddTaskForm";
 import TaskToolbar from "./TaskToolbar";
 

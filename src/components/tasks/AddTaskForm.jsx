@@ -22,7 +22,8 @@ export default function AddTaskForm({ onAdd, ajoutEnCours }) {
       setErreur("Le titre ne peut pas être vide.");
       return;
     }
-    await onAdd(titre, priorite);
+    const ajoutReussi = await onAdd(titre, priorite);
+    if (!ajoutReussi) return;
     setNouvelleTache("");
     setPriorite("medium");
     setErreur("");

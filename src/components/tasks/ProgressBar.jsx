@@ -1,3 +1,5 @@
+"use client";
+
 import { useId } from "react";
 
 // Barre de progression accessible basée sur un pourcentage (0 à 100)

@@ -9,9 +9,16 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Refuse tout accès par défaut (filet de sécurité)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
     // --- Tâches privées -------------------------------------------------
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow get: if request.auth != null && request.auth.uid == userId;
+      allow list: if false;
+      allow write: if request.auth != null && request.auth.uid == userId;
 
       match /tasks/{taskId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
@@ -22,6 +29,21 @@ service cloud.firestore {
     match /sharedLists/{listId} {
       function estAuth() { return request.auth != null; }
       function uid() { return request.auth.uid; }
+      function email() {
+        return (request.auth.token.email is string)
+          ? lower(request.auth.token.email)
+          : "";
+      }
+      function ownerEmailCourant() {
+        return (resource.data.ownerEmail is string)
+          ? lower(resource.data.ownerEmail)
+          : "";
+      }
+      function ownerEmailFutur() {
+        return (request.resource.data.ownerEmail is string)
+          ? lower(request.resource.data.ownerEmail)
+          : "";
+      }
       function listData() { return resource.data; }
 
       function estOwner() {
@@ -30,18 +52,67 @@ service cloud.firestore {
       function roleCourant() {
         return listData().roles[uid()];
       }
+      function roleCourantParEmail() {
+        return listData().emailRoles[email()];
+      }
       function estMembre() {
         return estAuth() && (
-          estOwner() || (uid() in listData().roles)
+          estOwner() ||
+          (uid() in listData().roles) ||
+          (email() in listData().emailRoles) ||
+          listData().memberEmails.hasAny([email()])
         );
       }
       function peutEditer() {
         return estMembre() && (
-          estOwner() || roleCourant() == 'admin' || roleCourant() == 'editor'
+          estOwner() ||
+          roleCourant() == 'admin' ||
+          roleCourant() == 'editor' ||
+          roleCourantParEmail() == 'admin' ||
+          roleCourantParEmail() == 'editor'
         );
       }
       function peutGerer() {
-        return estOwner() || (estMembre() && roleCourant() == 'admin');
+        return estOwner() || (
+          estMembre() &&
+          (roleCourant() == 'admin' || roleCourantParEmail() == 'admin')
+        );
+      }
+      function champsModifiablesSharedList() {
+        return [
+          'name',
+          'roles',
+          'emailRoles',
+          'memberIds',
+          'memberEmails',
+          'emailToUid',
+          'ownerId',
+          'ownerEmail',
+          'createdAt'
+        ];
+      }
+      function ownerEstImmuable() {
+        return request.resource.data.ownerId == resource.data.ownerId
+          && ownerEmailFutur() == ownerEmailCourant();
+      }
+      function metaEstImmuable() {
+        return request.resource.data.createdAt == resource.data.createdAt;
+      }
+      function ownerToujoursAdmin() {
+        return request.resource.data.roles[resource.data.ownerId] == 'admin'
+          && request.resource.data.emailRoles[ownerEmailCourant()] == 'admin';
+      }
+      function ownerToujoursMembre() {
+        return request.resource.data.memberIds.hasAny([resource.data.ownerId])
+          && request.resource.data.memberEmails.hasAny([ownerEmailCourant()]);
+      }
+      function updateSharedListValide() {
+        return request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(champsModifiablesSharedList())
+          && ownerEstImmuable()
+          && metaEstImmuable()
+          && ownerToujoursAdmin()
+          && ownerToujoursMembre();
       }
 
       // Lecture : tout membre
@@ -50,10 +121,12 @@ service cloud.firestore {
       // Création : l'appelant doit se nommer owner et s'ajouter comme admin
       allow create: if estAuth()
         && request.resource.data.ownerId == uid()
-        && request.resource.data.roles[uid()] == 'admin';
+        && request.resource.data.roles[uid()] == 'admin'
+        && request.resource.data.emailRoles[email()] == 'admin';
 
-      // Mise à jour du doc (gestion membres / rôles) : admin uniquement
-      allow update: if peutGerer();
+      // Mise à jour du doc (gestion membres / rôles) :
+      // admin uniquement + garde-fous anti-mutations arbitraires.
+      allow update: if peutGerer() && updateSharedListValide();
 
       // Suppression : owner uniquement
       allow delete: if estOwner();
@@ -66,17 +139,24 @@ service cloud.firestore {
         function roleDansParent() {
           return parentList().roles[request.auth.uid];
         }
+        function roleDansParentParEmail() {
+          return parentList().emailRoles[email()];
+        }
         function estMembreParent() {
           return request.auth != null && (
             parentList().ownerId == request.auth.uid ||
-            (request.auth.uid in parentList().roles)
+            (request.auth.uid in parentList().roles) ||
+            (email() in parentList().emailRoles) ||
+            parentList().memberEmails.hasAny([email()])
           );
         }
         function peutEditerParent() {
           return estMembreParent() && (
             parentList().ownerId == request.auth.uid ||
             roleDansParent() == 'admin' ||
-            roleDansParent() == 'editor'
+            roleDansParent() == 'editor' ||
+            roleDansParentParEmail() == 'admin' ||
+            roleDansParentParEmail() == 'editor'
           );
         }
 
